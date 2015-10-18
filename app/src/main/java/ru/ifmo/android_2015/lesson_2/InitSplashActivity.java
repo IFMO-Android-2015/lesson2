@@ -1,6 +1,7 @@
 package ru.ifmo.android_2015.lesson_2;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,26 +46,44 @@ public class InitSplashActivity extends Activity {
         titleTextView.setText(R.string.downloading);
         progressBarView.setVisibility(View.VISIBLE);
 
-        try {
-            // ВНИМАНИЕ: это очень плохая идея -- выполнять сетевые запросы в основном потоке.
-            // Обычно Android просто не дает это сделать -- бросает NetworkOnMainThreadException.
-            // Чтобы продемонстировать, как тормозит UI, мы можем выключить проверку потока, которую
-            // делает система при выполнении сетевых запросов. Для этого раскомментируйте эту строчку:
-            //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-
-            downloadFile();
-            titleTextView.setText(R.string.done);
-
-        } catch (Exception e) {
-            Log.e(TAG, "Error downloading file: " + e, e);
-            titleTextView.setText(R.string.error);
-        }
-
-        progressBarView.setVisibility(View.INVISIBLE);
+        new DownloadFileTask().execute();
     }
 
     /**
-     * Скачивает списко городов во временный файл.
+     * Таск, выполняющий скачивание файла в фоновом потоке.
+     */
+    class DownloadFileTask extends AsyncTask<Void, Void, Integer> {
+
+        /**
+         * Скачивание файла в фоновом потоке. Возвращает результат:
+         *      0 -- если файл успешно скачался
+         *      1 -- если произошла ошибка
+         */
+        @Override
+        protected Integer doInBackground(Void... ignore) {
+            try {
+                downloadFile();
+                return 0;
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error downloading file: " + e, e);
+                return 1;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer resultCode) {
+            // Проверяем код, который вернул doInBackground и показываем текст в зависимости
+            // от результата
+            int textResId = resultCode == 0 ? R.string.done : R.string.error;
+            titleTextView.setText(textResId);
+            // Скрываем индикатор прогресса
+            progressBarView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * Скачивает список городов во временный файл.
      */
     void downloadFile() throws IOException {
         File destFile = FileUtils.createTempExternalFile(this, "gz");
