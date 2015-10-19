@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Example 2.3</string>
+    <string name="app_name">Example 2.4</string>
     <string name="downloading">Загрузка&#8230;</string>
     <string name="error">Ошибка</string>
     <string name="done">Готово</string>
