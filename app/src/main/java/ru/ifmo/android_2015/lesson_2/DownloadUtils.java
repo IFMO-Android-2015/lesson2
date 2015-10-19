@@ -1,5 +1,6 @@
 package ru.ifmo.android_2015.lesson_2;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.File;
@@ -21,10 +22,15 @@ final class DownloadUtils {
      *
      * @param downloadUrl   URL - откуда скачивать (http:// или https://)
      * @param destFile      файл, в который сохранять.
+     * @param progressCallback  опциональный callback для уведомления о прогрессе скачивания
+     *                          файлы. Его метод onProgressChanged вызывается синхронно
+     *                          в текущем потоке.
      *
      * @throws IOException  В случае ошибки выполнения сетевого запроса или записи файла.
      */
-    static void downloadFile(String downloadUrl, File destFile) throws IOException {
+    static void downloadFile(String downloadUrl,
+                             File destFile,
+                             @Nullable ProgressCallback progressCallback) throws IOException {
         Log.d(TAG, "Start downloading url: " + downloadUrl);
         Log.d(TAG, "Saving to file: " + destFile);
 
@@ -60,6 +66,9 @@ final class DownloadUtils {
         // Сколько байт всего получили (и записали).
         int receivedLength = 0;
 
+        // прогресс скачивания от 0 до 100
+        int progress = 0;
+
         try {
             // Начинаем читать ответа
             in = conn.getInputStream();
@@ -71,6 +80,15 @@ final class DownloadUtils {
             while ((receivedBytes = in.read(buffer)) >= 0) {
                 out.write(buffer, 0, receivedBytes);
                 receivedLength += receivedBytes;
+
+                if (contentLength > 0) {
+                    int newProgress = 100 * receivedLength / contentLength;
+                    if (newProgress > progress && progressCallback != null) {
+                        Log.d(TAG, "Downloaded " + newProgress + "% of " + contentLength + " bytes");
+                        progressCallback.onProgressChanged(newProgress);
+                    }
+                    progress = newProgress;
+                }
             }
 
         } finally {
@@ -96,6 +114,10 @@ final class DownloadUtils {
         } else {
             Log.d(TAG, "Received " + receivedLength + " bytes");
         }
+    }
+
+    static void downloadFile(String downloadUrl, File destFile) throws IOException {
+        downloadFile(downloadUrl, destFile, null /*progressCallback*/);
     }
 
     private static final String TAG = "Download";

@@ -37,8 +37,9 @@
             android:layout_below="@id/title_text"
             android:layout_marginTop="18dp"
             android:layout_marginBottom="24dp"
-            android:layout_centerHorizontal="true"
-            style="@android:style/Widget.ProgressBar.Large.Inverse"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             />
     </RelativeLayout>
 </FrameLayout>
