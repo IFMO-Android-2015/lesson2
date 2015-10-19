@@ -38,7 +38,7 @@
             android:layout_marginTop="18dp"
             android:layout_marginBottom="24dp"
             android:layout_centerHorizontal="true"
-            style="@android:style/Widget.ProgressBar.Large.Inverse"
+            style="@android:style/Widget.Holo.Light.ProgressBar.Large.Inverse"
             />
     </RelativeLayout>
 </FrameLayout>
