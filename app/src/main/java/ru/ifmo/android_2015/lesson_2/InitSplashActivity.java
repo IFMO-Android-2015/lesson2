@@ -52,7 +52,7 @@ public class InitSplashActivity extends Activity {
             downloadTask.execute();
         } else {
             // Передаем в ранее запущенный таск текущий объект Activity
-            downloadTask.changeActivity(this);
+            downloadTask.attachActivity(this);
         }
     }
 
@@ -108,7 +108,7 @@ public class InitSplashActivity extends Activity {
          *
          * @param activity новый объект Activity
          */
-        void changeActivity(InitSplashActivity activity) {
+        void attachActivity(InitSplashActivity activity) {
             this.activity = activity;
             updateView();
         }
