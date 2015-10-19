@@ -36,12 +36,6 @@ public class InitSplashActivity extends Activity {
 
         titleTextView = (TextView) findViewById(R.id.title_text);
         progressBarView = (ProgressBar) findViewById(R.id.progress_bar);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
-        super.onPostCreate(savedInstanceState);
 
         titleTextView.setText(R.string.downloading);
         progressBarView.setVisibility(View.VISIBLE);
