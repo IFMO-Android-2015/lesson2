@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,9 +40,6 @@ public class InitSplashActivity extends Activity {
         titleTextView = (TextView) findViewById(R.id.title_text);
         progressBarView = (ProgressBar) findViewById(R.id.progress_bar);
 
-        titleTextView.setText(R.string.downloading);
-
-        progressBarView.setProgress(0);
         progressBarView.setMax(100);
 
         if (savedInstanceState != null) {
@@ -52,13 +48,12 @@ public class InitSplashActivity extends Activity {
         }
         if (downloadTask == null) {
             // Создаем новый таск, только если не было ранее запущенного таска
-            downloadTask = new DownloadFileTask(getApplicationContext());
+            downloadTask = new DownloadFileTask(this);
+            downloadTask.execute();
+        } else {
+            // Передаем в ранее запущенный таск текущий объект Activity
+            downloadTask.changeActivity(this);
         }
-        // Передаем в таск (старый или новый) текущий объект Activity
-        downloadTask.attachActivity(this);
-
-
-        new DownloadFileTask(this).execute();
     }
 
     @Override
@@ -102,11 +97,18 @@ public class InitSplashActivity extends Activity {
         // Прогресс загрузки от 0 до 100
         private int progress;
 
-        DownloadFileTask(Context context) {
-            this.appContext = context.getApplicationContext();
+        DownloadFileTask(InitSplashActivity activity) {
+            this.appContext = activity.getApplicationContext();
+            this.activity = activity;
         }
 
-        void attachActivity(InitSplashActivity activity) {
+        /**
+         * Этот метод вызывается, когда новый объект Activity подключается к
+         * данному таску после смены конфигурации.
+         *
+         * @param activity новый объект Activity
+         */
+        void changeActivity(InitSplashActivity activity) {
             this.activity = activity;
             updateView();
         }
@@ -120,6 +122,14 @@ public class InitSplashActivity extends Activity {
                 activity.titleTextView.setText(state.titleResId);
                 activity.progressBarView.setProgress(progress);
             }
+        }
+
+        /**
+         * Вызывается в UI потоке из execute() до начала выполнения таска.
+         */
+        @Override
+        protected void onPreExecute() {
+            updateView();
         }
 
         /**
