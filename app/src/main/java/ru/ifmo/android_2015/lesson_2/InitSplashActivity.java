@@ -88,7 +88,7 @@ public class InitSplashActivity extends Activity {
             implements ProgressCallback {
 
         // Context приложения (Не Activity!) для доступа к файлам
-        Context appContext;
+        private Context appContext;
         // Текущий объект Activity, храним для обновления отображения
         private InitSplashActivity activity;
 
