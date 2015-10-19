@@ -38,39 +38,36 @@ final class DownloadUtils {
         // урлы для скачивания, мы привести результат к HttpURLConnection. В случае урла с другой
         // схемой, будет ошибка.
         HttpURLConnection conn = (HttpURLConnection) new URL(downloadUrl).openConnection();
-        // Мы хотим, чтобы в случае редиректа (код 3xx) HttpURLConnection  автоматически пошел
-        // по редиректу и вернул нам итоговый результат.
-        conn.setInstanceFollowRedirects(true);
-
-        // Проверяем HTTP код ответа. Ожидаем только ответ 200 (ОК). Остальные коды считаем ошибкой.
-        int responseCode = conn.getResponseCode();
-        Log.d(TAG, "Received HTTP response code: " + responseCode);
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new FileNotFoundException("Unexpected HTTP response: " + responseCode
-                    + ", " + conn.getResponseMessage());
-        }
-
-        // Узнаем размер файла, который мы собираемся скачать
-        // (приходит в ответе в HTTP заголовке Content-Length)
-        int contentLength = conn.getContentLength();
-        Log.d(TAG, "Content Length: " + contentLength);
-
         InputStream in = null;
         OutputStream out = null;
 
-        // Создаем временный буффер для I/O операций размером 128кб
-        byte [] buffer = new byte[1024 * 128];
-
-        // Размер полученной порции в байтах
-        int receivedBytes;
-        // Сколько байт всего получили (и записали).
-        int receivedLength = 0;
-
-        // прогресс скачивания от 0 до 100
-        int progress = 0;
-
         try {
-            // Начинаем читать ответа
+
+            // Проверяем HTTP код ответа. Ожидаем только ответ 200 (ОК).
+            // Остальные коды считаем ошибкой.
+            int responseCode = conn.getResponseCode();
+            Log.d(TAG, "Received HTTP response code: " + responseCode);
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new FileNotFoundException("Unexpected HTTP response: " + responseCode
+                        + ", " + conn.getResponseMessage());
+            }
+
+            // Узнаем размер файла, который мы собираемся скачать
+            // (приходит в ответе в HTTP заголовке Content-Length)
+            int contentLength = conn.getContentLength();
+            Log.d(TAG, "Content Length: " + contentLength);
+
+            // Создаем временный буффер для I/O операций размером 128кб
+            byte [] buffer = new byte[1024 * 128];
+
+            // Размер полученной порции в байтах
+            int receivedBytes;
+            // Сколько байт всего получили (и записали).
+            int receivedLength = 0;
+            // прогресс скачивания от 0 до 100
+            int progress = 0;
+
+            // Начинаем читать ответ
             in = conn.getInputStream();
             // И открываем файл для записи
             out = new FileOutputStream(destFile);
@@ -91,8 +88,14 @@ final class DownloadUtils {
                 }
             }
 
+            if (receivedLength != contentLength) {
+                Log.w(TAG, "Received " + receivedLength + " bytes, but expected " + contentLength);
+            } else {
+                Log.d(TAG, "Received " + receivedLength + " bytes");
+            }
+
         } finally {
-            // Закрываем все потоки
+            // Закрываем все потоки и соедиениние
             if (in != null) {
                 try {
                     in.close();
@@ -107,12 +110,7 @@ final class DownloadUtils {
                     Log.e(TAG, "Failed to close file: " + e, e);
                 }
             }
-        }
-
-        if (receivedLength != contentLength) {
-            Log.w(TAG, "Received " + receivedLength + " bytes, but expected " + contentLength);
-        } else {
-            Log.d(TAG, "Received " + receivedLength + " bytes");
+            conn.disconnect();
         }
     }
 

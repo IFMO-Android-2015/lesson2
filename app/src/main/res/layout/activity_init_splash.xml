@@ -37,9 +37,9 @@
             android:layout_below="@id/title_text"
             android:layout_marginTop="18dp"
             android:layout_marginBottom="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
             />
     </RelativeLayout>
 </FrameLayout>
