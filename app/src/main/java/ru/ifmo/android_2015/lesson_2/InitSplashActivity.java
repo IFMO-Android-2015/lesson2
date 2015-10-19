@@ -32,6 +32,7 @@ public class InitSplashActivity extends Activity {
     private DownloadFileTask downloadTask;
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
@@ -39,15 +40,10 @@ public class InitSplashActivity extends Activity {
 
         titleTextView = (TextView) findViewById(R.id.title_text);
         progressBarView = (ProgressBar) findViewById(R.id.progress_bar);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    protected void onPostCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onPostCreate");
-        super.onPostCreate(savedInstanceState);
 
         titleTextView.setText(R.string.downloading);
+
+        progressBarView.setProgress(0);
         progressBarView.setMax(100);
 
         if (savedInstanceState != null) {
