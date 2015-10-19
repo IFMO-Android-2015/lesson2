@@ -38,6 +38,7 @@ public class InitSplashActivity extends Activity {
         progressBarView = (ProgressBar) findViewById(R.id.progress_bar);
 
         titleTextView.setText(R.string.downloading);
+
         progressBarView.setProgress(0);
         progressBarView.setMax(100);
         progressBarView.setVisibility(View.VISIBLE);
