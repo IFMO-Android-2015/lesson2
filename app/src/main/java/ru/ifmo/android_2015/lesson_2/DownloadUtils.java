@@ -3,6 +3,8 @@ package ru.ifmo.android_2015.lesson_2;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.facebook.stetho.urlconnection.StethoURLConnectionManager;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,10 +36,15 @@ final class DownloadUtils {
         Log.d(TAG, "Start downloading url: " + downloadUrl);
         Log.d(TAG, "Saving to file: " + destFile);
 
+        // Для отладки. См. http://facebook.github.io/stetho/
+        StethoURLConnectionManager stethoManager = new StethoURLConnectionManager("Download");
+
         // Выполняем запрос по указанному урлу. Поскольку мы используем только http:// или https://
         // урлы для скачивания, мы привести результат к HttpURLConnection. В случае урла с другой
         // схемой, будет ошибка.
         HttpURLConnection conn = (HttpURLConnection) new URL(downloadUrl).openConnection();
+        stethoManager.preConnect(conn, null);
+
         InputStream in = null;
         OutputStream out = null;
 
@@ -57,8 +64,10 @@ final class DownloadUtils {
             int contentLength = conn.getContentLength();
             Log.d(TAG, "Content Length: " + contentLength);
 
+            stethoManager.postConnect();
+
             // Создаем временный буффер для I/O операций размером 128кб
-            byte [] buffer = new byte[1024 * 128];
+            byte[] buffer = new byte[1024 * 128];
 
             // Размер полученной порции в байтах
             int receivedBytes;
@@ -69,6 +78,7 @@ final class DownloadUtils {
 
             // Начинаем читать ответ
             in = conn.getInputStream();
+            in = stethoManager.interpretResponseStream(in);
             // И открываем файл для записи
             out = new FileOutputStream(destFile);
 
@@ -93,6 +103,11 @@ final class DownloadUtils {
             } else {
                 Log.d(TAG, "Received " + receivedLength + " bytes");
             }
+
+        } catch (IOException e) {
+            // Ловим ошибку только для отладки, кидаем ее дальше
+            stethoManager.httpExchangeFailed(e);
+            throw e;
 
         } finally {
             // Закрываем все потоки и соедиениние
