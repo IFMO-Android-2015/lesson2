@@ -9,9 +9,9 @@
 
 # Материалы лекции
 
-Power Point: https://cloud.mail.ru/public/BU6C/AUvJnQ9QP
+Power Point: https://cloud.mail.ru/public/3zAP/H1JTYoEpx
 
-PDF: https://cloud.mail.ru/public/7H2m/8LweuMVZe
+PDF: https://cloud.mail.ru/public/Fjuf/HgAgNX8ZH
 
 # Домашнее задание
 
