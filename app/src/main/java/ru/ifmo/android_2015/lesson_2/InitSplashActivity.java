@@ -2,6 +2,7 @@ package ru.ifmo.android_2015.lesson_2;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -43,8 +44,11 @@ public class InitSplashActivity extends Activity {
             // ВНИМАНИЕ: это очень плохая идея -- выполнять сетевые запросы в основном потоке.
             // Обычно Android просто не дает это сделать -- бросает NetworkOnMainThreadException.
             // Чтобы продемонстировать, как тормозит UI, мы можем выключить проверку потока, которую
-            // делает система при выполнении сетевых запросов. Для этого раскомментируйте эту строчку:
-            //StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+            // делает система при выполнении сетевых запросов.
+            //
+            // Если закоментировать эту строчку, то можно будет увидеть в логах
+            // NetworkOnMainThreadException.
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
 
             downloadFile();
             titleTextView.setText(R.string.done);
